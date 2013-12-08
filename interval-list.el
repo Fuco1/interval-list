@@ -30,9 +30,25 @@
 ;;; Commentary:
 
 ;; This package implements a 1D selection model.  It provides methods
-;; to add or remove intervals and merges or splits the overlapping
+;; to add or remove intervals and merge or split the overlapping
 ;; portions automatically.  The intervals are modeled as a list of
-;; cons (beg . end)
+;; cons (beg . end) ordered in ascending order.  An example interval
+;; list is:
+;;
+;; ((1 . 4) (7 . 12) (15 . 17))
+;;
+;; Each interval represents all the integers inside it, including the
+;; boundaries.  Therefore, a list like ((1 . 2) (3 . 4)) is invalid
+;; and should be represented as ((1 . 4)) instead.  To model a single
+;; point selection, you can use interval of zero length, for example
+;; (5 . 5).  Two helper functions are provided to add or remove points
+;; instead of intervals.
+;;
+;; This data structure is not meant to be used for querying, it is only
+;; useful to represent the selection as a whole.  A helper macro is
+;; provided to iterate over the selected indices.  Lookup is of course
+;; possible, but inefficient.  For data structure designed for
+;; interval and point lookup see package `interval-tree' instead.
 
 ;; See github readme at https://github.com/Fuco1/interval-list
 
@@ -41,6 +57,10 @@
 (require 'dash)
 
 (defun intlist-add-interval (intlist begin end)
+  "Add interval between BEGIN and END inclusive into INTLIST.
+
+The overlapping intervals are merged if needed.  This operation
+runs in O(n) with respect to number of intervals in the list."
   (let* ((split (--split-with (<= (car it) begin) intlist))
          (splice (-concat (car split) (list (cons begin end)) (cadr split)))
          (backprop (-reduce-r-from (lambda (it acc)
@@ -66,7 +86,10 @@ See `intlist-add-interval'."
   (intlist-add-interval intlist point point))
 
 (defun intlist-remove-interval (intlist begin end)
-  "Remove interval between BEGIN and END from intlist"
+  "Remove interval between BEGIN and END inclusive from INTLIST.
+
+This operation runs in O(n) time with respect to number of
+intervals in the list."
   (let* ((split-ends (-mapcat (lambda (it)
                                 (cond
                                  ((and (= (car it) (cdr it))
