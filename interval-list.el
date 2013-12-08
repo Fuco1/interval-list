@@ -59,7 +59,11 @@
                                     (cdr backprop))))
     (nreverse forwardprop)))
 
+(defun intlist-add-point (intlist point)
+  "Add point POINT into INTLIST.
 
+See `intlist-add-interval'."
+  (intlist-add-interval intlist point point))
 
 (defun intlist-remove-interval (intlist begin end)
   "Remove interval between BEGIN and END from intlist"
@@ -90,6 +94,12 @@
                (and (>= (car it) begin)
                     (<= (cdr it) end))) split-ends)))
 
+(defun intlist-remove-point (intlist point)
+  "Remove POINT from INTLIST.
+
+See `intlist-remove-interval'."
+  (intlist-remove-interval intlist point point))
+
 (cl-eval-when (eval)
   (ert-deftest intlist-add-to-empty ()
     (should (equal (intlist-add-interval nil 1 2) '((1 . 2)))))
@@ -119,6 +129,7 @@
                    ((((3 . 6) (8 . 10)) 5 9) . ((3 . 10)))
                    ((((3 . 6) (8 . 10) (12 . 14)) 5 15) . ((3 . 15)))
                    ((((3 . 6) (8 . 10) (12 . 14)) 5 9) . ((3 . 10) (12 . 14)))
+                   ((((1 . 3) (5 . 8)) 4 4) . ((1 . 8)))
                    )))
       (cl-dolist (case cases)
         (should (equal (intlist-add-interval (caar case) (cadar case) (caddar case)) (cdr case))))))
@@ -136,6 +147,7 @@
                    ((((1 . 4)) 3 3) . ((1 . 2) (4 . 4)))
                    ((((1 . 4)) 4 4) . ((1 . 3)))
                    ((((1 . 4)) 3 5) . ((1 . 2)))
+                   ((((1 . 4)) 2 2) . ((1 . 1) (3 . 4)))
                    ((((1 . 4) (6 . 9)) 3 6) . ((1 . 2) (7 . 9)))
                    ((((1 . 4) (6 . 9)) 4 10) . ((1 . 3)))
                    ((((1 . 4) (6 . 9) (12 . 15)) 4 13) . ((1 . 3) (14 . 15))))))
