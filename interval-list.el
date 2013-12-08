@@ -187,7 +187,19 @@ See `intlist-remove-interval'."
                    ((((1 . 4) (6 . 9)) 4 10) . ((1 . 3)))
                    ((((1 . 4) (6 . 9) (12 . 15)) 4 13) . ((1 . 3) (14 . 15))))))
       (cl-dolist (case cases)
-        (should (equal (intlist-remove-interval (caar case) (cadar case) (caddar case)) (cdr case)))))))
+        (should (equal (intlist-remove-interval (caar case) (cadar case) (caddar case)) (cdr case))))))
+
+  (ert-deftest intlist-loop ()
+    (should (equal (let ((sum 0))
+                     (intlist-loop (it '((1 . 4) (6 . 8)))
+                       (setq sum (+ sum it)))
+                     sum)
+                   31))
+    (should (equal (let ((str ""))
+                     (intlist-loop (it '((1 . 4) (6 . 8)))
+                       (setq str (concat str (int-to-string it))))
+                     str)
+                   "1234678"))))
 
 (provide 'interval-list)
 ;;; interval-list.el ends here
