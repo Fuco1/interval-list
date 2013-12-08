@@ -100,6 +100,18 @@ See `intlist-add-interval'."
 See `intlist-remove-interval'."
   (intlist-remove-interval intlist point point))
 
+(defmacro intlist-loop (spec &rest body)
+  "Evaluate BODY with VAR bound to each point from INTLIST, in turn.
+
+\(fn (VAR INTLIST) BODY...)"
+  (declare (debug ((symbolp form) body))
+           (indent 1))
+  (let ((list (make-symbol "list")))
+    `(let ((,list ,(cadr spec)))
+       (mapc (lambda (int)
+               (loop for ,(car spec) from (car int) to (cdr int)
+                     do (progn ,@body))) ,list))))
+
 (cl-eval-when (eval)
   (ert-deftest intlist-add-to-empty ()
     (should (equal (intlist-add-interval nil 1 2) '((1 . 2)))))
