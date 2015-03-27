@@ -6,7 +6,7 @@
 ;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
 ;; Created: 7 Dec 2013
 ;; Version: 0.1
-;; Package-Requires: ((dash "2.4.0") (cl-lib "0.5"))
+;; Package-Requires: ((dash "2.4.0") (cl-lib "0.5") (emacs "24.4"))
 ;; Keywords: extensions, data structure
 ;; URL: https://github.com/Fuco1/interval-list
 
